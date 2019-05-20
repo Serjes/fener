@@ -6,27 +6,25 @@ case class FenStruct(
                       halfMoves: Array[Char],
                       moves: Array[Char]
                     ) {
-  def printAll: Unit = println(s"${fields.toStream.slice(0, 8).mkString} and  ${whoMove.mkString} and ${castling.mkString} and ${brokenField.mkString}")
+//  def printAll= println(s"${fields.toStream.slice(0, 8).mkString} and  ${whoMove.mkString} and ${castling.mkString} and ${brokenField.mkString}")
+  def printAll= println(s"${fields.mkString} and  ${whoMove.mkString} and ${castling.mkString} and " +
+    s"${brokenField.mkString} and ${halfMoves.mkString} and ${moves.mkString}")
+
+  def draw = {
+
+  }
 
 }
 
 object FenStruct {
-  def parse(s: String) = {
+  def parse(s: String): Option[FenStruct] = {
     val pattern = "^(\\S+)\\s(\\S+)\\s(\\S+)\\s(\\S+)\\s(\\S+)\\s(\\S+)".r
-    val struct: Option[FenStruct] = s match {
+    s match {
       case pattern(fields, whoMove, castling, brokenField, halfMoves, moves) =>
         Some(FenStruct(fields.toCharArray, whoMove.toCharArray, castling.toCharArray, brokenField.toCharArray,
           halfMoves.toCharArray, moves.toCharArray))
-//        for {_ <- fields
-//             _ <- whoMove
-//             _ <- castling
-//             _ <- brokenField
-//             _ <- halfMoves
-//             _ <- moves
-//        } yield FenStruct(fields, whoMove, castling, brokenField, halfMoves, moves)
       case _ => None
     }
-    if (struct.isDefined)struct.get.printAll
   }
 
   def subparse(line: String) = {
