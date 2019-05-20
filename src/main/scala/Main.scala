@@ -7,5 +7,7 @@ object Main {
 
     listOfFens.foreach(_.printAll)
 
+    listOfFens.foreach(_.draw)
+
   }
 }
