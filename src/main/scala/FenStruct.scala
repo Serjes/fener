@@ -4,29 +4,45 @@ case class FenStruct(
                       castling: Array[Char],
                       brokenField: Array[Char],
                       halfMoves: Array[Char],
-                      moves: Array[Char]
+                      moves: Array[Char],
+                      nextMove: Array[Char]
                     ) {
-  def printAll= println(printFields + s" and  ${whoMove.mkString} and ${castling.mkString} and " +
-    s"${brokenField.mkString} and ${halfMoves.mkString} and ${moves.mkString}")
-  def printFields: String = {
+
+  def printAllFields= {
+    if (nextMove != null)
+      println(printFields("/") + s" ${whoMove.mkString} ${castling.mkString} " +
+      s"${brokenField.mkString} ${halfMoves.mkString} ${moves.mkString} ${nextMove.mkString}")
+    else println(printFields("/") + s" ${whoMove.mkString} ${castling.mkString} " +
+      s"${brokenField.mkString} ${halfMoves.mkString} ${moves.mkString}")
+  }
+
+  def printFields(separator: String): String = {
     var sum: String = ""
-    for(elem <- fields.reverse) sum = sum + " " + elem.mkString
-    sum
+    fields match {
+      case null => sum = "Wrong fields"
+      case _ => for(elem <- fields.reverse) sum += (elem.mkString + separator)
+    }
+    sum.subSequence(0, sum.length - 1).toString
   }
 
   def printFieldsAt(index: Int): String = {
     var sum: String = ""
-    for (elem <- fields(index - 1)) {
-      if (elem.toString.matches("\\d")) {
-        val num = elem.toString.toInt
-        for (n <- 1 to num) sum = sum + " ."
+    fields match {
+      case null => sum = "Wrong fields"
+      case _ => {
+        for (elem <- fields(index - 1)) {
+          if (elem.toString.matches("\\d")) {
+            val num = elem.toString.toInt
+            for (n <- 1 to num) sum = sum + " ."
+          }
+          else sum = sum + " " + elem
+        }
       }
-      else sum = sum + " " + elem
     }
     sum
   }
 
-  def draw = {
+  def drawBoard = {
     val borderLine = "  +" + "-"*17 + "+"
     println("\n" + borderLine)
     for (i <- (1 to 8).reverse) {
@@ -35,16 +51,34 @@ case class FenStruct(
     println(borderLine)
   }
 
+  def makeMove = {
+    whoMove(0) = whoMove(0) match {
+      case 'b' => 'w'
+      case 'w' => 'b'
+      case _   => 'b'
+    }
+
+    for (i <- nextMove.indices) nextMove.update(i, 0) //очищаем "следующий ход"
+  }
+
+
+
 }
 
 object FenStruct {
   def parse(s: String): Option[FenStruct] = {
     val pattern = "^(\\S+)\\s(\\S+)\\s(\\S+)\\s(\\S+)\\s(\\S+)\\s(\\S+)".r
+    val patternWithMove = "^(\\S+)\\s(\\S+)\\s(\\S+)\\s(\\S+)\\s(\\S+)\\s(\\S+)\\s(\\S+)".r
     s match {
-      case pattern(fields, whoMove, castling, brokenField, halfMoves, moves) => {
+      case pattern(fields, whoMove, castling, brokenField, halfMoves, moves) =>{
+        if (FenStruct.subparse(fields) == null) None
+        else Some(FenStruct(FenStruct.subparse(fields), whoMove.toCharArray, castling.toCharArray, brokenField.toCharArray,
+//          halfMoves.toCharArray, moves.toCharArray, null))
+          halfMoves.toCharArray, moves.toCharArray, Array(0,0,0,0)))
+        }
+      case patternWithMove(fields, whoMove, castling, brokenField, halfMoves, moves, nextMove) =>
         Some(FenStruct(FenStruct.subparse(fields), whoMove.toCharArray, castling.toCharArray, brokenField.toCharArray,
-          halfMoves.toCharArray, moves.toCharArray))
-      }
+          halfMoves.toCharArray, moves.toCharArray, nextMove.toCharArray))
       case _ => None
     }
   }
@@ -56,9 +90,9 @@ object FenStruct {
         Array(line1.toCharArray, line2.toCharArray, line3.toCharArray, line4.toCharArray, line5.toCharArray,
           line6.toCharArray, line7.toCharArray, line8.toCharArray)
       }
-//      case _ => Array(Array(null))
-
-
+      case _ => null
     }
   }
+
+
 }
