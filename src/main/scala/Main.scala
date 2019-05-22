@@ -2,28 +2,34 @@ import scala.io.Source
 
 object Main {
   //  val inputFileWithFens = "fens_with_error.txt"
-  val inputFileWithFens = "fens_with_moves.txt"
+//  val inputFileWithFens = "fens_with_moves.txt"
+  val inputFileWithFensAndMoves = "fens_with_moves2.txt"
   val inputFileWithFensAnswers = "fens_with_moves_answers.txt"
   //  val inputFileWithFens = "fens.txt"
 
   def main(args: Array[String]): Unit = {
-    val listOfFens: List[FenStruct] = getInputFens(inputFileWithFens)
+//    val listOfFens: List[FenStruct] = getInputFens(inputFileWithFens)
+    val tupleOflistOfFensAndMoves = getInputFensAndMOves(inputFileWithFensAndMoves)
     val listOfAnswers: List[FenStruct] = getInputFens(inputFileWithFensAnswers)
 
-    //    println("Дано: ")
-    //    listOfFens.foreach(_.printAllFields)
-    //    println("Надо: ")
-    //    listOfAnswers.foreach(_.printAllFields)
+    println("Дано: ")
+    tupleOflistOfFensAndMoves._1.foreach(_.printAllFields)
+    tupleOflistOfFensAndMoves._2.foreach(_.printAll)
 
-    //    println("Обработаем ходы(берем fen-ы только с ходами):")
-    //    val doubleList = listOfFens.filter(_.nextMove != null).zip(listOfAnswers)
-    //    val counter = 0
-    //    makeMoves(doubleList,counter)
+//        println("Дано: ")
+//        listOfFens.foreach(_.printAllFields)
+//        println("Надо: ")
+//        listOfAnswers.foreach(_.printAllFields)
+//
+//        println("Обработаем ходы(берем fen-ы только с ходами):")
+//        val doubleList = listOfFens.filter(_.nextMove != null).zip(listOfAnswers)
+//        val counter = 0
+//        makeMoves(doubleList,counter)
 
     //        listOfFens.foreach(_.drawBoard)
-    listOfFens(2).printAllFields
-    listOfFens(2).drawBoard
-    listOfFens(2).makeMove.printAllFields
+//    listOfFens(2).printAllFields
+//    listOfFens(2).drawBoard
+//    listOfFens(2).makeMove.printAllFields
 
   }
 
@@ -44,7 +50,7 @@ object Main {
           && head._1.nextMove.sameElements(head._2.nextMove)
           && eq(head._1.fields, head._2.fields)
         ) println("Совпадают")
-        else println("Несовпадают!!!")
+        else println("Не совпадают!!!")
         makeMoves(tail, counter1)
       }
       case Nil => println("Все обработаны")
@@ -60,5 +66,13 @@ object Main {
   private def getInputFens(fileName: String) = {
     val allLinesOfFile: List[String] = Source.fromResource(fileName).getLines.toList
     allLinesOfFile.flatMap(FenStruct.parse)
+
+  }
+
+  private def getInputFensAndMOves(fileName: String) = {
+    val allLinesOfFile: List[String] = Source.fromResource(fileName).getLines.toList
+    (allLinesOfFile.flatMap(FenStruct.parse), allLinesOfFile.flatMap(MoveStruct.parse))
+//    (Nil, allLinesOfFile.flatMap(MoveStruct.parse))
+
   }
 }
