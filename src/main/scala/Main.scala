@@ -10,20 +10,20 @@ object Main {
     val listOfFens: List[FenStruct] = getInputFens(inputFileWithFens)
     val listOfAnswers: List[FenStruct] = getInputFens(inputFileWithFensAnswers)
 
-    //    println("Дано: ")
-    //    listOfFens.foreach(_.printAllFields)
-    //    println("Надо: ")
-    //    listOfAnswers.foreach(_.printAllFields)
+        println("Дано: ")
+        listOfFens.foreach(_.printAllFields)
+        println("Надо: ")
+        listOfAnswers.foreach(_.printAllFields)
 
-    //    println("Обработаем ходы(берем fen-ы только с ходами):")
-    //    val doubleList = listOfFens.filter(_.nextMove != null).zip(listOfAnswers)
-    //    val counter = 0
-    //    makeMoves(doubleList,counter)
+        println("Обработаем ходы(берем fen-ы только с ходами):")
+        val doubleList = listOfFens.filter(_.nextMove != null).zip(listOfAnswers)
+        val counter = 0
+        makeMoves(doubleList,counter)
 
-    //        listOfFens.foreach(_.drawBoard)
-    listOfFens(2).printAllFields
-    listOfFens(2).drawBoard
-    listOfFens(2).makeMove.printAllFields
+//            listOfFens.foreach(_.drawBoard)
+//    listOfFens(2).printAllFields
+//    listOfFens(2).drawBoard
+//    listOfFens(2).makeMove.printAllFields
 
   }
 
@@ -45,6 +45,7 @@ object Main {
           && eq(head._1.fields, head._2.fields)
         ) println("Совпадают")
         else println("Несовпадают!!!")
+        head._1.drawBoard
         makeMoves(tail, counter1)
       }
       case Nil => println("Все обработаны")

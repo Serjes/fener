@@ -3,17 +3,13 @@ case class FenStruct(
                       whoMove: Array[Char],
                       castling: Array[Char],
                       brokenField: Array[Char],
-                      //                      halfMoves: Array[Char],
-                      //                      moves: Array[Char],
-                      //                      moves: Int,
-                      moves: Array[Int], // 0 - halfMoves, 1 - move
+                      moves: Array[Int], // index 0 - ply, 1 - move
                       nextMove: Array[Char]
                     ) {
 
   def printAllFields = {
     if (nextMove != null)
       println(printFields("/") + s" ${whoMove.mkString} ${castling.mkString} " +
-        //      s"${brokenField.mkString} ${halfMoves.mkString} ${moves.mkString} ${nextMove.mkString}")
         s"${brokenField.mkString} ${moves(0)} ${moves(1)} ${nextMove.mkString}")
     else println(printFields("/") + s" ${whoMove.mkString} ${castling.mkString} " +
       s"${brokenField.mkString} ${moves(0)} ${moves(1)}")
@@ -51,20 +47,43 @@ case class FenStruct(
     for (i <- (1 to 8).reverse) {
       println(i + " |" + printFieldsAt(i) + " |")
     }
-    println(borderLine)
+    print(borderLine + "\n    ")
+    for (i <- 'a' to 'h') print(i + " ")
+    println("")
   }
 
-  def makeMove = {
+  def makeMove: FenStruct = {
+
+    if (nextMove.sameElements(Array(0,0,0,0))) {
+      println("Пустой ход")
+      return this
+    }
     whoMove(0) = whoMove(0) match {
-      case 'b' => 'w'
+      case 'b' => {
+        moves(1) += 1
+        'w'
+      }
       case 'w' => 'b'
       case _ => 'b'
     }
+    val letter = nextMove(0)
+    val yAxisCurrentPos = nextMove(1).toString.toInt
 
+    val xAxisCurrentPos: Int = letter match {
+      case 'a' => 1
+      case 'b' => 2
+      case 'c' => 3
+      case 'd' => 4
+      case 'e' => 5
+      case 'f' => 6
+      case 'g' => 7
+      case 'h' => 8
+    }
+    println("Current position: x =" + xAxisCurrentPos + " y =" + yAxisCurrentPos)
+    println(fields(yAxisCurrentPos - 1).mkString)
+//    fields(yAxisCurrentPos).update(xAxisCurrentPos, '.')
 
-    //    val movesArr: Array[Char] = (moves.mkString.toInt + 1).toString.toCharArray
-    //    for (i <- moves.indices) moves.update(i,movesArr(i))
-    moves(1) += 1
+    moves(0) += 1 // полуходы
 
     for (i <- nextMove.indices) nextMove.update(i, 0) //очищаем "следующий ход"
 
@@ -82,14 +101,10 @@ object FenStruct {
       case pattern(fields, whoMove, castling, brokenField, halfMoves, moves) => {
         if (FenStruct.subparse(fields) == null) None
         else Some(FenStruct(FenStruct.subparse(fields), whoMove.toCharArray, castling.toCharArray, brokenField.toCharArray,
-          //          halfMoves.toCharArray, moves.toCharArray, null))
-          //          halfMoves.toCharArray, moves.toCharArray, Array(0,0,0,0)))
           Array(halfMoves.toInt, moves.toInt), Array(0, 0, 0, 0)))
       }
       case patternWithMove(fields, whoMove, castling, brokenField, halfMoves, moves, nextMove) =>
         Some(FenStruct(FenStruct.subparse(fields), whoMove.toCharArray, castling.toCharArray, brokenField.toCharArray,
-          //          halfMoves.toCharArray, moves.toCharArray, nextMove.toCharArray))
-          //          halfMoves.toCharArray, Array(moves.toInt), nextMove.toCharArray))
           Array(halfMoves.toInt, moves.toInt), nextMove.toCharArray))
       case _ => None
     }
