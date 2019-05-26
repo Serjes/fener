@@ -7,9 +7,12 @@ case class FenStruct(
                       nextMove: Array[Char]
                     ) {
 
-  def printAllFields = {
+  def printAllFields(toExport: Boolean) = {
+    var fieldsToString: String = ""
+    if (toExport) fieldsToString = printFieldsAtExport("/")
+    else fieldsToString = printFields("/")
     if (nextMove != null)
-      println(printFields("/") + s" ${whoMove.mkString} ${castling.mkString} " +
+      println(fieldsToString + s" ${whoMove.mkString} ${castling.mkString} " +
         s"${brokenField.mkString} ${moves(0)} ${moves(1)} ${nextMove.mkString}")
     else println(printFields("/") + s" ${whoMove.mkString} ${castling.mkString} " +
       s"${brokenField.mkString} ${moves(0)} ${moves(1)}")
@@ -19,7 +22,35 @@ case class FenStruct(
     var sum: String = ""
     fields match {
       case null => sum = "Wrong fields"
-      case _ => for (elem <- fields.reverse) sum += (elem.mkString + separator)
+      case _ => sum = fields.indices.reverse.map(fields(_).mkString).foldLeft("")(_ + separator + _)
+    }
+    sum.subSequence(0, sum.length - 1).toString
+  }
+
+  def mkStringWithDots(arr: Array[Char]): String = {
+    var newStr: String = ""
+    var contin = 0
+    for (elem <- arr.indices) {
+      if (arr(elem) != '.') {
+        if (contin > 0 ) {
+          newStr += contin.toString
+          contin = 0
+        }
+        newStr += arr(elem)
+      }
+      else {
+        contin += 1
+      }
+    }
+    if (contin > 0 ) newStr += contin.toString
+    newStr
+  }
+
+  def printFieldsAtExport(separator: String): String = {
+    var sum: String = ""
+    fields match {
+      case null => sum = "Wrong fields"
+      case _ => sum = fields.indices.reverse.map(fields(_)).map(mkStringWithDots).foldLeft("")(_ + separator + _)
     }
     sum.subSequence(0, sum.length - 1).toString
   }
@@ -114,11 +145,23 @@ object FenStruct {
     val pattern = "^(\\S+)\\/(\\S+)\\/(\\S+)\\/(\\S+)\\/(\\S+)\\/(\\S+)\\/(\\S+)\\/(\\S+)".r
     line match {
       case pattern(line8, line7, line6, line5, line4, line3, line2, line1) => {
-        Array(line1.toCharArray, line2.toCharArray, line3.toCharArray, line4.toCharArray, line5.toCharArray,
-          line6.toCharArray, line7.toCharArray, line8.toCharArray)
+        Array(convertDigit(line1).toCharArray, convertDigit(line2).toCharArray, convertDigit(line3).toCharArray,
+          convertDigit(line4).toCharArray, convertDigit(line5).toCharArray, convertDigit(line6).toCharArray,
+          convertDigit(line7).toCharArray, convertDigit(line8).toCharArray)
       }
       case _ => null
     }
+  }
+
+  def convertDigit(str: String) = {
+    var outStr: String = ""
+    for(i <- str) {
+      if (i >= '0' && i <= '9') {
+        outStr = outStr + "." * i.toString.toInt
+      }
+      else outStr = outStr + i
+    }
+    outStr
   }
 
 

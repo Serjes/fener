@@ -1,19 +1,17 @@
 import scala.io.Source
 
 object Main {
-  //  val inputFileWithFens = "fens_with_error.txt"
   val inputFileWithFens = "fens_with_moves.txt"
   val inputFileWithFensAnswers = "fens_with_moves_answers.txt"
-  //  val inputFileWithFens = "fens.txt"
 
   def main(args: Array[String]): Unit = {
     val listOfFens: List[FenStruct] = getInputFens(inputFileWithFens)
     val listOfAnswers: List[FenStruct] = getInputFens(inputFileWithFensAnswers)
 
         println("Дано: ")
-        listOfFens.foreach(_.printAllFields)
+        listOfFens.foreach(_.printAllFields(true))
         println("Надо: ")
-        listOfAnswers.foreach(_.printAllFields)
+        listOfAnswers.foreach(_.printAllFields(true))
 
         println("Обработаем ходы(берем fen-ы только с ходами):")
         val doubleList = listOfFens.filter(_.nextMove != null).zip(listOfAnswers)
@@ -25,6 +23,7 @@ object Main {
 //    listOfFens(2).drawBoard
 //    listOfFens(2).makeMove.printAllFields
 
+
   }
 
   private def makeMoves(fensAndAnswers: List[(FenStruct, FenStruct)], counter: Int): Unit = {
@@ -32,10 +31,10 @@ object Main {
     fensAndAnswers match {
       case head :: tail => {
         println(s"\n$counter1) Выполняем ход:")
-        head._1.makeMove.printAllFields
+        head._1.makeMove.printAllFields(false)
 //        head._1.printAllFields
         println("Сравните с правильным ответом:")
-        head._2.printAllFields
+        head._2.printAllFields(false)
         if (head._1.whoMove.sameElements(head._2.whoMove)
           && head._1.castling.sameElements(head._2.castling)
           && head._1.brokenField.sameElements(head._2.brokenField)
