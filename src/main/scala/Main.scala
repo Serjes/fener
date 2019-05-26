@@ -38,7 +38,6 @@ object Main {
         if (head._1.whoMove.sameElements(head._2.whoMove)
           && head._1.castling.sameElements(head._2.castling)
           && head._1.brokenField.sameElements(head._2.brokenField)
-          //          && head._1.halfMoves.sameElements(head._2.halfMoves)
           && head._1.moves.sameElements(head._2.moves)
           && head._1.nextMove.sameElements(head._2.nextMove)
           && eq(head._1.fields, head._2.fields)

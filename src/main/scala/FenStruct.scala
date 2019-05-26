@@ -83,12 +83,16 @@ case class FenStruct(
     println("")
   }
 
+  //сделаем ход
   def makeMove: FenStruct = {
 
+    //если нет указания как ходить
     if (nextMove.sameElements(Array(0,0,0,0))) {
       println("Пустой ход")
       return this
     }
+
+    //счетчик полного хода
     whoMove(0) = whoMove(0) match {
       case 'b' => {
         moves(1) += 1
@@ -97,10 +101,29 @@ case class FenStruct(
       case 'w' => 'b'
       case _ => 'b'
     }
-    val letter = nextMove(0)
-    val yAxisCurrentPos = nextMove(1).toString.toInt
 
-    val xAxisCurrentPos: Int = letter match {
+    //двигаем фигуру
+    val yAxisCurrentPos = nextMove(1).toString.toInt
+    val xAxisCurrentPos: Int = convertLetterToNum(nextMove(0))
+    println("Current position: x =" + xAxisCurrentPos + " y =" + yAxisCurrentPos)
+    val piece = fields(yAxisCurrentPos - 1)(xAxisCurrentPos - 1)
+    fields(yAxisCurrentPos - 1).update(xAxisCurrentPos - 1, '.')
+
+    val xAxisNextPos: Int = convertLetterToNum(nextMove(2))
+    val yAxisNextPos = nextMove(3).toString.toInt
+    fields(yAxisNextPos - 1).update(xAxisNextPos - 1, piece)
+
+    //счетчик полуходов
+    moves(0) += 1
+
+    //очищаем "следующий ход"
+    for (i <- nextMove.indices) nextMove.update(i, 0)
+
+    this
+  }
+
+  private def convertLetterToNum(letter: Char) = {
+    letter match {
       case 'a' => 1
       case 'b' => 2
       case 'c' => 3
@@ -110,18 +133,7 @@ case class FenStruct(
       case 'g' => 7
       case 'h' => 8
     }
-    println("Current position: x =" + xAxisCurrentPos + " y =" + yAxisCurrentPos)
-    println(fields(yAxisCurrentPos - 1).mkString)
-//    fields(yAxisCurrentPos).update(xAxisCurrentPos, '.')
-
-    moves(0) += 1 // полуходы
-
-    for (i <- nextMove.indices) nextMove.update(i, 0) //очищаем "следующий ход"
-
-    this
   }
-
-
 }
 
 object FenStruct {
