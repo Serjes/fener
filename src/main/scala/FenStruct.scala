@@ -11,11 +11,15 @@ case class FenStruct(
     var fieldsToString: String = ""
     if (toExport) fieldsToString = printFieldsAtExport("/")
     else fieldsToString = printFields("/")
+    //    var strBrokenField = brokenField.mkString
+    //    if (brokenField(0) == '-') strBrokenField = "-"
+    var strBrokenField = "-"
+    if (brokenField(0) != '-') strBrokenField = brokenField.mkString
     if (nextMove != null)
       println(fieldsToString + s" ${whoMove.mkString} ${castling.mkString} " +
-        s"${brokenField.mkString} ${moves(0)} ${moves(1)} ${nextMove.mkString}")
+        s"$strBrokenField ${moves(0)} ${moves(1)} ${nextMove.mkString}")
     else println(printFields("/") + s" ${whoMove.mkString} ${castling.mkString} " +
-      s"${brokenField.mkString} ${moves(0)} ${moves(1)}")
+      s"$strBrokenField ${moves(0)} ${moves(1)}")
   }
 
   def printFields(separator: String): String = {
@@ -32,7 +36,7 @@ case class FenStruct(
     var contin = 0
     for (elem <- arr.indices) {
       if (arr(elem) != '.') {
-        if (contin > 0 ) {
+        if (contin > 0) {
           newStr += contin.toString
           contin = 0
         }
@@ -42,17 +46,15 @@ case class FenStruct(
         contin += 1
       }
     }
-    if (contin > 0 ) newStr += contin.toString
+    if (contin > 0) newStr += contin.toString
     newStr
   }
 
   def printFieldsAtExport(separator: String): String = {
-    var sum: String = ""
     fields match {
-      case null => sum = "Wrong fields"
-      case _ => sum = fields.indices.reverse.map(fields(_)).map(mkStringWithDots).foldLeft("")(_ + separator + _)
+      case null => "Wrong fields"
+      case _ => fields.indices.reverse.map(fields(_)).map(mkStringWithDots).foldLeft("")(_ + separator + _)
     }
-    sum.subSequence(0, sum.length - 1).toString
   }
 
   def printFieldsAt(index: Int): String = {
@@ -87,10 +89,10 @@ case class FenStruct(
   def makeMove: FenStruct = {
 
     //если нет указания как ходить
-    if (nextMove.sameElements(Array(0,0,0,0))) {
+    if (nextMove.sameElements(Array(0, 0, 0, 0, 0))) {
       println("Пустой ход")
       return this
-    }
+    } else println(nextMove.mkString)
 
     //счетчик полного хода
     whoMove(0) = whoMove(0) match {
@@ -104,17 +106,41 @@ case class FenStruct(
 
     //двигаем фигуру
     val yAxisCurrentPos = nextMove(1).toString.toInt
-    val xAxisCurrentPos: Int = convertLetterToNum(nextMove(0))
-    println("Current position: x =" + xAxisCurrentPos + " y =" + yAxisCurrentPos)
+    val xAxisCurrentPos: Int = convertCharacterToNum(nextMove(0))
+    //    println("Current position: x =" + xAxisCurrentPos + " y =" + yAxisCurrentPos)
+    //фигура которая двигается
     val piece = fields(yAxisCurrentPos - 1)(xAxisCurrentPos - 1)
     fields(yAxisCurrentPos - 1).update(xAxisCurrentPos - 1, '.')
 
-    val xAxisNextPos: Int = convertLetterToNum(nextMove(2))
+    val xAxisNextPos: Int = convertCharacterToNum(nextMove(2))
     val yAxisNextPos = nextMove(3).toString.toInt
-    fields(yAxisNextPos - 1).update(xAxisNextPos - 1, piece)
+    //если ход со взятием то фигура которую съедаем:
+    val nextPiece = fields(yAxisNextPos - 1)(xAxisNextPos - 1)
+    if (nextMove(4) != 0) { //превращение пешки
+      fields(yAxisNextPos - 1).update(xAxisNextPos - 1, nextMove(4))
+    } else fields(yAxisNextPos - 1).update(xAxisNextPos - 1, piece)
+
+    //битое поле для белых
+    if (piece == 'P') {
+      val r = (yAxisCurrentPos + yAxisNextPos) / 2
+      if (r == 3) {
+        brokenField.update(0, convertNumToCharacter(xAxisCurrentPos))
+        brokenField.update(1, '3')
+      }
+    }
+    //битое поле для черных
+    if (piece == 'p') {
+      val r = (yAxisCurrentPos + yAxisNextPos) / 2
+      if (r == 6) {
+        brokenField.update(0, convertNumToCharacter(xAxisCurrentPos))
+        brokenField.update(1, '6')
+      }
+    }
 
     //счетчик полуходов
-    moves(0) += 1
+    if (nextPiece != '.') { //если ход со взятием
+      moves(0) = 0
+    } else if (!(piece == 'p' || piece == 'P')) moves(0) += 1 //если ход пешкой
 
     //очищаем "следующий ход"
     for (i <- nextMove.indices) nextMove.update(i, 0)
@@ -122,33 +148,43 @@ case class FenStruct(
     this
   }
 
-  private def convertLetterToNum(letter: Char) = {
-    letter match {
-      case 'a' => 1
-      case 'b' => 2
-      case 'c' => 3
-      case 'd' => 4
-      case 'e' => 5
-      case 'f' => 6
-      case 'g' => 7
-      case 'h' => 8
-    }
-  }
+  private def convertCharacterToNum(char: Char) = char.toInt - 96
+
+  private def convertNumToCharacter(num: Int) = (num + 96).toChar
+
 }
 
 object FenStruct {
   def parse(s: String): Option[FenStruct] = {
-    val pattern = "^(\\S+)\\s(\\S+)\\s(\\S+)\\s(\\S+)\\s(\\S+)\\s(\\S+)".r
+    val patternWithoutMove = "^(\\S+)\\s(\\S+)\\s(\\S+)\\s(\\S+)\\s(\\S+)\\s(\\S+)".r
     val patternWithMove = "^(\\S+)\\s(\\S+)\\s(\\S+)\\s(\\S+)\\s(\\S+)\\s(\\S+)\\s(\\S+)".r
     s match {
-      case pattern(fields, whoMove, castling, brokenField, halfMoves, moves) => {
+      case patternWithoutMove(fields, whoMove, castling, brokenField, halfMoves, moves) => {
         if (FenStruct.subparse(fields) == null) None
-        else Some(FenStruct(FenStruct.subparse(fields), whoMove.toCharArray, castling.toCharArray, brokenField.toCharArray,
-          Array(halfMoves.toInt, moves.toInt), Array(0, 0, 0, 0)))
+        else {
+          val brokenFieldArr: Array[Char] = Array(0, 0)
+          val tmpBfArr: Array[Char] = brokenField.toCharArray
+          for (i <- tmpBfArr.indices) brokenFieldArr.update(i, tmpBfArr(i))
+
+          Some(FenStruct(FenStruct.subparse(fields), whoMove.toCharArray, castling.toCharArray, brokenFieldArr,
+            Array(halfMoves.toInt, moves.toInt), Array(0, 0, 0, 0, 0)))
+        }
+
+        //          Array(halfMoves.toInt, moves.toInt), Array(0, 0, 0, 0)))
       }
-      case patternWithMove(fields, whoMove, castling, brokenField, halfMoves, moves, nextMove) =>
-        Some(FenStruct(FenStruct.subparse(fields), whoMove.toCharArray, castling.toCharArray, brokenField.toCharArray,
-          Array(halfMoves.toInt, moves.toInt), nextMove.toCharArray))
+      case patternWithMove(fields, whoMove, castling, brokenField, halfMoves, moves, nextMove) => {
+        val nextMoveArr: Array[Char] = Array(0, 0, 0, 0, 0)
+        val tmpArr: Array[Char] = nextMove.toCharArray
+        for (i <- tmpArr.indices) nextMoveArr.update(i, tmpArr(i))
+
+        val brokenFieldArr: Array[Char] = Array(0, 0)
+        val tmpBfArr: Array[Char] = brokenField.toCharArray
+        for (i <- tmpBfArr.indices) brokenFieldArr.update(i, tmpBfArr(i))
+
+        Some(FenStruct(FenStruct.subparse(fields), whoMove.toCharArray, castling.toCharArray, brokenFieldArr,
+          //          Array(halfMoves.toInt, moves.toInt), nextMove.toCharArray))
+          Array(halfMoves.toInt, moves.toInt), nextMoveArr))
+      }
       case _ => None
     }
   }
@@ -167,7 +203,7 @@ object FenStruct {
 
   def convertDigit(str: String) = {
     var outStr: String = ""
-    for(i <- str) {
+    for (i <- str) {
       if (i >= '0' && i <= '9') {
         outStr = outStr + "." * i.toString.toInt
       }
