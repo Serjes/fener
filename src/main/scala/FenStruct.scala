@@ -11,8 +11,6 @@ case class FenStruct(
     var fieldsToString: String = ""
     if (toExport) fieldsToString = printFieldsAtExport("/")
     else fieldsToString = printFields("/")
-    //    var strBrokenField = brokenField.mkString
-    //    if (brokenField(0) == '-') strBrokenField = "-"
     var strBrokenField = "-"
     if (brokenField(0) != '-') strBrokenField = brokenField.mkString
     if (nextMove != null)
@@ -121,19 +119,29 @@ case class FenStruct(
     } else fields(yAxisNextPos - 1).update(xAxisNextPos - 1, piece)
 
     //битое поле для белых
+    val numForWhite = 3
     if (piece == 'P') {
-      val r = (yAxisCurrentPos + yAxisNextPos) / 2
-      if (r == 3) {
+      val y = (yAxisCurrentPos + yAxisNextPos) / 2
+      if ((y == numForWhite)&&((fields(yAxisNextPos - 1)(xAxisNextPos) == 'p')||(fields(yAxisNextPos - 1)(xAxisNextPos - 2) == 'p'))) {
         brokenField.update(0, convertNumToCharacter(xAxisCurrentPos))
-        brokenField.update(1, '3')
+        brokenField.update(1, (numForWhite + '0').toChar)
       }
     }
     //битое поле для черных
+    val numForBlack = 6
     if (piece == 'p') {
-      val r = (yAxisCurrentPos + yAxisNextPos) / 2
-      if (r == 6) {
+      val y = (yAxisCurrentPos + yAxisNextPos) / 2
+      if ((y == numForBlack)&&((fields(yAxisNextPos - 1)(xAxisNextPos) == 'P')||(fields(yAxisNextPos - 1)(xAxisNextPos - 2) == 'P'))) {
         brokenField.update(0, convertNumToCharacter(xAxisCurrentPos))
-        brokenField.update(1, '6')
+        brokenField.update(1, (numForBlack + '0').toChar)
+      }
+
+      //проверка на взятие при проходе
+      if ((yAxisCurrentPos != yAxisNextPos) && (xAxisCurrentPos != xAxisNextPos)) {
+        val check1 = fields(yAxisCurrentPos - 1)(xAxisNextPos - 1)
+        if (check1 == 'P') fields(yAxisCurrentPos - 1).update(xAxisNextPos - 1, '.')
+        val check2 = fields(yAxisNextPos - 1)(xAxisCurrentPos - 1)
+        if (check2 == 'P') fields(yAxisNextPos - 1).update(xAxisCurrentPos - 1, '.')
       }
     }
 
@@ -170,7 +178,6 @@ object FenStruct {
             Array(halfMoves.toInt, moves.toInt), Array(0, 0, 0, 0, 0)))
         }
 
-        //          Array(halfMoves.toInt, moves.toInt), Array(0, 0, 0, 0)))
       }
       case patternWithMove(fields, whoMove, castling, brokenField, halfMoves, moves, nextMove) => {
         val nextMoveArr: Array[Char] = Array(0, 0, 0, 0, 0)
@@ -182,7 +189,6 @@ object FenStruct {
         for (i <- tmpBfArr.indices) brokenFieldArr.update(i, tmpBfArr(i))
 
         Some(FenStruct(FenStruct.subparse(fields), whoMove.toCharArray, castling.toCharArray, brokenFieldArr,
-          //          Array(halfMoves.toInt, moves.toInt), nextMove.toCharArray))
           Array(halfMoves.toInt, moves.toInt), nextMoveArr))
       }
       case _ => None
