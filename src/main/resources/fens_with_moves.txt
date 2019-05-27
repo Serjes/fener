@@ -26,3 +26,7 @@ rnbqkbnr/ppp1pppp/8/4P3/2Pp4/8/PP1P1PPP/RNBQKBNR b KQkq c3 0 3 d4c3
 r1bqkbnr/ppp1p1pp/2n5/4PpP1/8/2p5/PP1P1P1P/RNBQKBNR w KQkq f6 0 6 g5f6
 r1bqkbnr/ppp1p1pp/2n5/4PpP1/8/2p5/PP1P1P1P/RNBQKBNR w KQkq f6 0 6 e5f6
 r2qkbnr/pppbp2p/2n2p2/4PpP1/8/2p2N2/PP1P1P1P/RNBQK2R w KQkq - 0 9 e5f6
+Убирание флага рокировки при ходе королём (с 22)
+r3k2r/pppppppp/8/N7/8/8/PPPPPPPP/R3K2R b KQkq - 0 16 e8d8
+r2k3r/pppppppp/8/N7/8/8/PPPPPPPP/R3K2R w KQ - 1 17 e1d1
+r3k2r/pppppppp/8/n7/2N5/8/PPPPPPPP/R3K2R w KQkq - 4 16 e1d1

@@ -88,9 +88,9 @@ case class FenStruct(
 
     //если нет указания как ходить
     if (nextMove.sameElements(Array(0, 0, 0, 0, 0))) {
-      println("Пустой ход")
+      println("пустой ход")
       return this
-    } else println(nextMove.mkString)
+    } else println("ход: " + nextMove.mkString)
 
     //счетчик полного хода
     whoMove(0) = whoMove(0) match {
@@ -155,6 +155,22 @@ case class FenStruct(
       }
     }
 
+    if (piece == 'k') {
+      castling(2) = 0
+      castling(3) = 0
+    }
+    if (piece == 'K') {
+      if (castling(2) == 0 && castling(3) == 0) {
+        castling(0) = '-'
+        castling(1) = 0
+      } else {
+        castling(0) = castling(2)
+        castling(1) = castling(3)
+        castling(2) = 0
+        castling(3) = 0
+      }
+    }
+
     //счетчик полуходов
     if (nextPiece != '.') { //если ход со взятием
       moves(0) = 0
@@ -184,7 +200,11 @@ object FenStruct {
           val tmpBfArr: Array[Char] = brokenField.toCharArray
           for (i <- tmpBfArr.indices) brokenFieldArr.update(i, tmpBfArr(i))
 
-          Some(FenStruct(FenStruct.subparse(fields), whoMove.toCharArray, castling.toCharArray, brokenFieldArr,
+          val castlingArr: Array[Char] = Array(0, 0, 0, 0)
+          val tmpCastArr: Array[Char] = castling.toCharArray
+          for (i <- tmpCastArr.indices) castlingArr.update(i, tmpCastArr(i))
+
+          Some(FenStruct(FenStruct.subparse(fields), whoMove.toCharArray, castlingArr, brokenFieldArr,
             Array(halfMoves.toInt, moves.toInt), Array(0, 0, 0, 0, 0)))
         }
 
@@ -198,7 +218,11 @@ object FenStruct {
         val tmpBfArr: Array[Char] = brokenField.toCharArray
         for (i <- tmpBfArr.indices) brokenFieldArr.update(i, tmpBfArr(i))
 
-        Some(FenStruct(FenStruct.subparse(fields), whoMove.toCharArray, castling.toCharArray, brokenFieldArr,
+        val castlingArr: Array[Char] = Array(0, 0, 0, 0)
+        val tmpCastArr: Array[Char] = castling.toCharArray
+        for (i <- tmpCastArr.indices) castlingArr.update(i, tmpCastArr(i))
+
+        Some(FenStruct(FenStruct.subparse(fields), whoMove.toCharArray, castlingArr, brokenFieldArr,
           Array(halfMoves.toInt, moves.toInt), nextMoveArr))
       }
       case _ => None
