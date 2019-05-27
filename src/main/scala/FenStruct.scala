@@ -118,30 +118,40 @@ case class FenStruct(
       fields(yAxisNextPos - 1).update(xAxisNextPos - 1, nextMove(4))
     } else fields(yAxisNextPos - 1).update(xAxisNextPos - 1, piece)
 
-    //битое поле для белых
-    val numForWhite = 3
-    if (piece == 'P') {
-      val y = (yAxisCurrentPos + yAxisNextPos) / 2
-      if ((y == numForWhite)&&((fields(yAxisNextPos - 1)(xAxisNextPos) == 'p')||(fields(yAxisNextPos - 1)(xAxisNextPos - 2) == 'p'))) {
-        brokenField.update(0, convertNumToCharacter(xAxisCurrentPos))
-        brokenField.update(1, (numForWhite + '0').toChar)
-      }
-    }
-    //битое поле для черных
-    val numForBlack = 6
-    if (piece == 'p') {
-      val y = (yAxisCurrentPos + yAxisNextPos) / 2
-      if ((y == numForBlack)&&((fields(yAxisNextPos - 1)(xAxisNextPos) == 'P')||(fields(yAxisNextPos - 1)(xAxisNextPos - 2) == 'P'))) {
-        brokenField.update(0, convertNumToCharacter(xAxisCurrentPos))
-        brokenField.update(1, (numForBlack + '0').toChar)
-      }
-
-      //проверка на взятие при проходе
-      if ((yAxisCurrentPos != yAxisNextPos) && (xAxisCurrentPos != xAxisNextPos)) {
+    //проверка есть ли битое поле и не переходит ли пешка в него
+    if ((nextMove(3) == brokenField(1)) && (nextMove(2) == brokenField(0))) {
+      if (piece == 'p') {
         val check1 = fields(yAxisCurrentPos - 1)(xAxisNextPos - 1)
         if (check1 == 'P') fields(yAxisCurrentPos - 1).update(xAxisNextPos - 1, '.')
         val check2 = fields(yAxisNextPos - 1)(xAxisCurrentPos - 1)
         if (check2 == 'P') fields(yAxisNextPos - 1).update(xAxisCurrentPos - 1, '.')
+      }
+      if (piece == 'P') {
+        val check1 = fields(yAxisCurrentPos - 1)(xAxisNextPos - 1)
+        if (check1 == 'p') fields(yAxisCurrentPos - 1).update(xAxisNextPos - 1, '.')
+        val check2 = fields(yAxisNextPos - 1)(xAxisCurrentPos - 1)
+        if (check2 == 'p') fields(yAxisNextPos - 1).update(xAxisCurrentPos - 1, '.')
+      }
+    }
+    brokenField(0) = '-'
+    brokenField(1) = 0
+
+    //установка битого поля для белых
+    val numForWhite = 3
+    if (piece == 'P') {
+      val y = (yAxisCurrentPos + yAxisNextPos) / 2
+      if ((y == numForWhite) && ((fields(yAxisNextPos - 1)(xAxisNextPos) == 'p') || (fields(yAxisNextPos - 1)(xAxisNextPos - 2) == 'p'))) {
+        brokenField.update(0, convertNumToCharacter(xAxisCurrentPos))
+        brokenField.update(1, (numForWhite + '0').toChar)
+      }
+    }
+    //установка битого поле для черных
+    val numForBlack = 6
+    if (piece == 'p') {
+      val y = (yAxisCurrentPos + yAxisNextPos) / 2
+      if ((y == numForBlack) && ((fields(yAxisNextPos - 1)(xAxisNextPos) == 'P') || (fields(yAxisNextPos - 1)(xAxisNextPos - 2) == 'P'))) {
+        brokenField.update(0, convertNumToCharacter(xAxisCurrentPos))
+        brokenField.update(1, (numForBlack + '0').toChar)
       }
     }
 
