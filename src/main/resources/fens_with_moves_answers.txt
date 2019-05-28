@@ -30,3 +30,8 @@ r2qkbnr/pppbp2p/2n2P2/5pP1/8/2p2N2/PP1P1P1P/RNBQK2R b KQkq - 0 9
 r2k3r/pppppppp/8/N7/8/8/PPPPPPPP/R3K2R w KQ - 1 17
 r2k3r/pppppppp/8/N7/8/8/PPPPPPPP/R2K3R b - - 2 17
 r3k2r/pppppppp/8/n7/2N5/8/PPPPPPPP/R2K3R b kq - 5 16
+Убирание флага рокировки при ходе ладьёй
+1r2k2r/pppppppp/8/N7/8/8/PPPPPPPP/R3K2R w KQk - 1 17
+1r2k2r/pppppppp/8/N7/8/8/PPPPPPPP/R3K1R1 b Qk - 2 17
+1r2k1r1/pppppppp/8/N7/8/8/PPPPPPPP/R3K1R1 w Q - 3 18
+1r2k1r1/pppppppp/8/N7/8/8/PPPPPPPP/2R1K1R1 b - - 4 18

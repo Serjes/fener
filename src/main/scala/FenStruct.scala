@@ -13,10 +13,14 @@ case class FenStruct(
     else fieldsToString = printFields("/")
     var strBrokenField = "-"
     if (brokenField(0) != '-') strBrokenField = brokenField.mkString
+
+    var strCastling = "-"
+    if (castling(0) != '-') strCastling = castling.mkString
+
     if (nextMove != null)
-      println(fieldsToString + s" ${whoMove.mkString} ${castling.mkString} " +
+      println(fieldsToString + s" ${whoMove.mkString} $strCastling " +
         s"$strBrokenField ${moves(0)} ${moves(1)} ${nextMove.mkString}")
-    else println(printFields("/") + s" ${whoMove.mkString} ${castling.mkString} " +
+    else println(printFields("/") + s" ${whoMove.mkString} $strCastling " +
       s"$strBrokenField ${moves(0)} ${moves(1)}")
   }
 
@@ -155,6 +159,7 @@ case class FenStruct(
       }
     }
 
+    //Убирание флага рокировки при ходе королём
     if (piece == 'k') {
       castling(2) = 0
       castling(3) = 0
@@ -168,6 +173,40 @@ case class FenStruct(
         castling(1) = castling(3)
         castling(2) = 0
         castling(3) = 0
+      }
+    }
+
+    val castlingList = castling.toList.filter( _ != 0)
+    //Убирание флага рокировки при ходе ладьёй
+    if (piece == 'r') {
+      if (nextMove(0) == 'a') { //тогда q убираем из рокировки
+        for (i <- castling.indices) castling.update(i, 0)
+        //        castlingList.filter(_ != 'q').copyToArray(castling)
+        val psl = castlingList.filter(_ != 'q')
+        if (psl.isEmpty) castling.update(0, '-')
+        else psl.copyToArray(castling)
+      } else if (nextMove(0) == 'h') { //тогда k убираем из рокировки
+        for (i <- castling.indices) castling.update(i, 0)
+        //        castlingList.filter(_ != 'k').copyToArray(castling)
+        val psl = castlingList.filter(_ != 'k')
+        if (psl.isEmpty) castling.update(0, '-')
+        else psl.copyToArray(castling)
+      }
+
+    }
+    if (piece == 'R') {
+      if (nextMove(0) == 'a') { //тогда q убираем из рокировки
+        for (i <- castling.indices) castling.update(i, 0)
+        //        castlingList.filter(_ != 'Q').copyToArray(castling)
+        val psl = castlingList.filter(_ != 'Q')
+        if (psl.isEmpty) castling.update(0, '-')
+        else psl.copyToArray(castling)
+      } else if (nextMove(0) == 'h') { //тогда k убираем из рокировки
+        for (i <- castling.indices) castling.update(i, 0)
+        //        castlingList.filter(_ != 'K').copyToArray(castling)
+        val psl = castlingList.filter(_ != 'K')
+        if (psl.isEmpty) castling.update(0, '-')
+        else psl.copyToArray(castling)
       }
     }
 

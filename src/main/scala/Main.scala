@@ -22,7 +22,7 @@ object Main {
     //    listOfFens(2).printAllFields
     //    listOfFens(2).drawBoard
     //    listOfFens(2).makeMove.printAllFields
-    processingOneFen()
+//    processingOneFen()
   }
 
   private def processingOneFen(): Unit = {
