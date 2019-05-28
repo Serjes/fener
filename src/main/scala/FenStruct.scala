@@ -11,15 +11,16 @@ case class FenStruct(
     var fieldsToString: String = ""
     if (toExport) fieldsToString = printFieldsAtExport("/")
     else fieldsToString = printFields("/")
+
     var strBrokenField = "-"
     if (brokenField(0) != '-') strBrokenField = brokenField.mkString
 
     var strCastling = "-"
-    if (castling(0) != '-') strCastling = castling.mkString
+    if (castling(0) != '-') strCastling = castling.filter(_ != 0).mkString
 
     if (nextMove != null)
       println(fieldsToString + s" ${whoMove.mkString} $strCastling " +
-        s"$strBrokenField ${moves(0)} ${moves(1)} ${nextMove.mkString}")
+        s"$strBrokenField ${moves(0)} ${moves(1)} ${nextMove.filter(_ != 0).mkString}")
     else println(printFields("/") + s" ${whoMove.mkString} $strCastling " +
       s"$strBrokenField ${moves(0)} ${moves(1)}")
   }
@@ -159,54 +160,33 @@ case class FenStruct(
       }
     }
 
+    val castlingList = castling.toList.filter(_ != 0)
     //Убирание флага рокировки при ходе королём
     if (piece == 'k') {
-      castling(2) = 0
-      castling(3) = 0
+      updateCastling(castlingList, 'k')
+      val castlingList2 = castling.toList.filter(_ != 0)
+      updateCastling(castlingList2, 'q')
     }
     if (piece == 'K') {
-      if (castling(2) == 0 && castling(3) == 0) {
-        castling(0) = '-'
-        castling(1) = 0
-      } else {
-        castling(0) = castling(2)
-        castling(1) = castling(3)
-        castling(2) = 0
-        castling(3) = 0
-      }
+      updateCastling(castlingList, 'K')
+      val castlingList2 = castling.toList.filter(_ != 0)
+      updateCastling(castlingList2, 'Q')
     }
 
-    val castlingList = castling.toList.filter( _ != 0)
     //Убирание флага рокировки при ходе ладьёй
     if (piece == 'r') {
       if (nextMove(0) == 'a') { //тогда q убираем из рокировки
-        for (i <- castling.indices) castling.update(i, 0)
-        //        castlingList.filter(_ != 'q').copyToArray(castling)
-        val psl = castlingList.filter(_ != 'q')
-        if (psl.isEmpty) castling.update(0, '-')
-        else psl.copyToArray(castling)
+        updateCastling(castlingList, 'q')
       } else if (nextMove(0) == 'h') { //тогда k убираем из рокировки
-        for (i <- castling.indices) castling.update(i, 0)
-        //        castlingList.filter(_ != 'k').copyToArray(castling)
-        val psl = castlingList.filter(_ != 'k')
-        if (psl.isEmpty) castling.update(0, '-')
-        else psl.copyToArray(castling)
+        updateCastling(castlingList, 'k')
       }
 
     }
     if (piece == 'R') {
       if (nextMove(0) == 'a') { //тогда q убираем из рокировки
-        for (i <- castling.indices) castling.update(i, 0)
-        //        castlingList.filter(_ != 'Q').copyToArray(castling)
-        val psl = castlingList.filter(_ != 'Q')
-        if (psl.isEmpty) castling.update(0, '-')
-        else psl.copyToArray(castling)
+        updateCastling(castlingList, 'Q')
       } else if (nextMove(0) == 'h') { //тогда k убираем из рокировки
-        for (i <- castling.indices) castling.update(i, 0)
-        //        castlingList.filter(_ != 'K').copyToArray(castling)
-        val psl = castlingList.filter(_ != 'K')
-        if (psl.isEmpty) castling.update(0, '-')
-        else psl.copyToArray(castling)
+        updateCastling(castlingList, 'K')
       }
     }
 
@@ -219,6 +199,13 @@ case class FenStruct(
     for (i <- nextMove.indices) nextMove.update(i, 0)
 
     this
+  }
+
+  private def updateCastling(castlingList: List[Char], filterChar: Char) = {
+    for (i <- castling.indices) castling.update(i, 0)
+    val processedCastlingList = castlingList.filter(_ != filterChar)
+    if (processedCastlingList.isEmpty) castling.update(0, '-')
+    else processedCastlingList.copyToArray(castling)
   }
 
   private def convertCharacterToNum(char: Char) = char.toInt - 96
@@ -235,40 +222,26 @@ object FenStruct {
       case patternWithoutMove(fields, whoMove, castling, brokenField, halfMoves, moves) => {
         if (FenStruct.subparse(fields) == null) None
         else {
-          val brokenFieldArr: Array[Char] = Array(0, 0)
-          val tmpBfArr: Array[Char] = brokenField.toCharArray
-          for (i <- tmpBfArr.indices) brokenFieldArr.update(i, tmpBfArr(i))
-
-          val castlingArr: Array[Char] = Array(0, 0, 0, 0)
-          val tmpCastArr: Array[Char] = castling.toCharArray
-          for (i <- tmpCastArr.indices) castlingArr.update(i, tmpCastArr(i))
-
-          Some(FenStruct(FenStruct.subparse(fields), whoMove.toCharArray, castlingArr, brokenFieldArr,
-            Array(halfMoves.toInt, moves.toInt), Array(0, 0, 0, 0, 0)))
+          Some(FenStruct(FenStruct.subparse(fields), whoMove.toCharArray, creatingArrayForItem(castling, 4),
+            creatingArrayForItem(brokenField, 2), Array(halfMoves.toInt, moves.toInt), Array(0, 0, 0, 0, 0)))
         }
-
       }
       case patternWithMove(fields, whoMove, castling, brokenField, halfMoves, moves, nextMove) => {
-        val nextMoveArr: Array[Char] = Array(0, 0, 0, 0, 0)
-        val tmpArr: Array[Char] = nextMove.toCharArray
-        for (i <- tmpArr.indices) nextMoveArr.update(i, tmpArr(i))
-
-        val brokenFieldArr: Array[Char] = Array(0, 0)
-        val tmpBfArr: Array[Char] = brokenField.toCharArray
-        for (i <- tmpBfArr.indices) brokenFieldArr.update(i, tmpBfArr(i))
-
-        val castlingArr: Array[Char] = Array(0, 0, 0, 0)
-        val tmpCastArr: Array[Char] = castling.toCharArray
-        for (i <- tmpCastArr.indices) castlingArr.update(i, tmpCastArr(i))
-
-        Some(FenStruct(FenStruct.subparse(fields), whoMove.toCharArray, castlingArr, brokenFieldArr,
-          Array(halfMoves.toInt, moves.toInt), nextMoveArr))
+        Some(FenStruct(FenStruct.subparse(fields), whoMove.toCharArray, creatingArrayForItem(castling, 4),
+          creatingArrayForItem(brokenField, 2), Array(halfMoves.toInt, moves.toInt), creatingArrayForItem(nextMove, 5)))
       }
       case _ => None
     }
   }
 
-  def subparse(line: String): Array[Array[Char]] = {
+  private def creatingArrayForItem(item: String, size: Int) = {
+    val itemArr: Array[Char] = new Array[Char](size)
+    val tmpItemArr: Array[Char] = item.toCharArray
+    for (i <- tmpItemArr.indices) itemArr.update(i, tmpItemArr(i))
+    itemArr
+  }
+
+  private def subparse(line: String): Array[Array[Char]] = {
     val pattern = "^(\\S+)\\/(\\S+)\\/(\\S+)\\/(\\S+)\\/(\\S+)\\/(\\S+)\\/(\\S+)\\/(\\S+)".r
     line match {
       case pattern(line8, line7, line6, line5, line4, line3, line2, line1) => {
@@ -280,7 +253,7 @@ object FenStruct {
     }
   }
 
-  def convertDigit(str: String) = {
+  private def convertDigit(str: String) = {
     var outStr: String = ""
     for (i <- str) {
       if (i >= '0' && i <= '9') {
