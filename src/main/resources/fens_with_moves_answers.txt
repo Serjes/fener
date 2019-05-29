@@ -1,0 +1,43 @@
+Изменение очерёдности и номера хода
+rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 2
+rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 2
+Увеличение счётчика полуходов без хода пешкой и взятий
+rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/R1BQKBNR b KQkq - 1 1
+rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1
+rnbqkb1r/pppppppp/8/8/6N1/8/PPPPPPPP/RNBQKB1R b KQkq - 0 3
+rnbqkb1r/pppppppp/8/4N3/6n1/2N5/PPPPPPPP/R1BQKB1R b KQkq - 5 3
+Ход без взятия
+k7/r7/b7/q7/N7/B7/7R/K7 b - - 16 48
+k7/r7/b7/8/N7/B7/7R/K3q3 w - - 17 49
+Ход со взятием
+rnbqkbnr/ppp1pppp/8/3P4/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2
+rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 3
+Превращение пешки
+rnbqkbnr/pppp1ppp/4P3/8/8/8/P4PPP/qNBQKBNR w Kkq - 0 6
+rnbqkbnr/pppp1ppp/4P3/8/8/8/P4PPP/bNBQKBNR w Kkq - 0 6
+rnRq1bnr/ppp1kppp/8/8/8/8/P4PPP/qNBQKBNR b K - 0 6
+rnNq1bnr/ppp1kppp/8/8/8/8/P4PPP/qNBQKBNR b K - 0 7
+Фиксация битого поля
+rnbqkbnr/ppp1pppp/8/4P3/2Pp4/8/PP1P1PPP/RNBQKBNR b KQkq c3 0 3
+rnbqkbnr/ppp1p1pp/8/4Pp2/2Pp4/8/PP1P1PPP/RNBQKBNR w KQkq f6 0 4
+rnbqkbnr/ppp1pppp/8/8/1P1p4/N6N/P1PPPPPP/R1BQKB1R b KQkq - 0 3
+Взятие на проходе
+rnbqkbnr/ppp1pppp/8/4P3/8/2p5/PP1P1PPP/RNBQKBNR w KQkq - 0 4
+r1bqkbnr/ppp1p1pp/2n2P2/4P3/8/2p5/PP1P1P1P/RNBQKBNR b KQkq - 0 6
+r1bqkbnr/ppp1p1pp/2n2P2/6P1/8/2p5/PP1P1P1P/RNBQKBNR b KQkq - 0 6
+r2qkbnr/pppbp2p/2n2P2/5pP1/8/2p2N2/PP1P1P1P/RNBQK2R b KQkq - 0 9
+Убирание флага рокировки при ходе королём
+r2k3r/pppppppp/8/N7/8/8/PPPPPPPP/R3K2R w KQ - 1 17
+r2k3r/pppppppp/8/N7/8/8/PPPPPPPP/R2K3R b - - 2 17
+r3k2r/pppppppp/8/n7/2N5/8/PPPPPPPP/R2K3R b kq - 5 16
+Убирание флага рокировки при ходе ладьёй
+1r2k2r/pppppppp/8/N7/8/8/PPPPPPPP/R3K2R w KQk - 1 17
+1r2k2r/pppppppp/8/N7/8/8/PPPPPPPP/R3K1R1 b Qk - 2 17
+1r2k1r1/pppppppp/8/N7/8/8/PPPPPPPP/R3K1R1 w Q - 3 18
+1r2k1r1/pppppppp/8/N7/8/8/PPPPPPPP/2R1K1R1 b - - 4 18
+Рокировка в короткую сторону
+r4rk1/pppppppp/8/N7/8/8/PPPPPPPP/R3K2R w KQ - 1 17
+r4rk1/pppppppp/8/N7/8/8/PPPPPPPP/R4RK1 b - - 2 17
+Рокировка в длинную сторону
+2kr3r/pppppppp/8/N7/8/8/PPPPPPPP/R3K2R w KQ - 1 17
+2kr3r/pppppppp/8/N7/8/8/PPPPPPPP/2KR3R b - - 2 17
