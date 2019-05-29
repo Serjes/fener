@@ -190,6 +190,44 @@ case class FenStruct(
       }
     }
 
+    //Рокировка
+    if (piece == 'k') {
+      if (yAxisCurrentPos == yAxisNextPos) { //двигается по горизонтали
+        if (xAxisNextPos - xAxisCurrentPos > 0) { //если двигается вправо
+          //вычислим индекс ладьи которая далее по оси х, если она есть
+          val ListIndexOfR = fields(yAxisCurrentPos - 1).toList.zipWithIndex.filter(_._1 == 'r').filter(_._2 >= xAxisNextPos)
+          if (ListIndexOfR != Nil ) {
+            fields(yAxisCurrentPos - 1).update(ListIndexOfR.head._2, '.')
+            fields(yAxisCurrentPos - 1).update(xAxisNextPos - 2, 'r')
+          }
+        } else { //двигается влево
+          val ListIndexOfR = fields(yAxisCurrentPos - 1).toList.zipWithIndex.filter(_._1 == 'r').filter(_._2 <= xAxisNextPos)
+          if (ListIndexOfR != Nil ) {
+            fields(yAxisCurrentPos - 1).update(ListIndexOfR.head._2, '.')
+            fields(yAxisCurrentPos - 1).update(xAxisNextPos, 'r')
+          }
+        }
+      }
+    }
+    if (piece == 'K') {
+      if (yAxisCurrentPos == yAxisNextPos) { //двигается по горизонтали
+        if (xAxisNextPos - xAxisCurrentPos > 0) { //если двигается вправо
+          //вычислим индекс ладьи которая далее по оси х, если она есть
+          val ListIndexOfR = fields(yAxisCurrentPos - 1).toList.zipWithIndex.filter(_._1 == 'R').filter(_._2 >= xAxisNextPos)
+          if (ListIndexOfR != Nil ) {
+            fields(yAxisCurrentPos - 1).update(ListIndexOfR.head._2, '.')
+            fields(yAxisCurrentPos - 1).update(xAxisNextPos - 2, 'R')
+          }
+        } else { //двигается влево
+          val ListIndexOfR = fields(yAxisCurrentPos - 1).toList.zipWithIndex.filter(_._1 == 'R').filter(_._2 <= xAxisNextPos)
+          if (ListIndexOfR != Nil ) {
+            fields(yAxisCurrentPos - 1).update(ListIndexOfR.head._2, '.')
+            fields(yAxisCurrentPos - 1).update(xAxisNextPos, 'R')
+          }
+        }
+      }
+    }
+
     //счетчик полуходов
     if (nextPiece != '.') { //если ход со взятием
       moves(0) = 0
@@ -263,6 +301,5 @@ object FenStruct {
     }
     outStr
   }
-
 
 }
